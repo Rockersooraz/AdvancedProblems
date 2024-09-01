@@ -1,7 +1,5 @@
 package problems.advancedcalculator;
 
-import org.w3c.dom.ls.LSOutput;
-import problems.array.ShiftElementsInArray;
 import problems.array.Utility;
 
 import java.util.*;
@@ -116,9 +114,6 @@ public class Calculator {
                 output = performCalculation(operation, Utility.convertToDoubleArray(value1.split("\\+|\\-|\\*|\\/")));
                 if (tuplesLinkedHashMap.size() < 2) return output;
                 performMappingOperation(key, output, operation);
-//                currentNode = entry.getKey();
-//                previousNode = entry.getKey() - 1;
-//                nextNode = entry.getKey() + 1;
                 keysToRemove.add(entry.getKey());
             }
         }
@@ -202,19 +197,16 @@ public class Calculator {
 
 
     public static void performMappingOperation(Integer key, String output, char operation) {
-//        if (key > 0 && key < tuplesLinkedHashMap.size()) {
         //updating upward node. Need to update for non zero key(down to up)
         if (key != 0) {
             String replace = tuplesLinkedHashMap.get(key - 1);
             int operationIndex = problems.advancedcalculator.Utility.getOperationIndex(replace);
             String substring = replace.substring(0, operationIndex + 1);
-//            String substring = replace.substring(0, replace.length() - 1);
             tuplesLinkedHashMap.put(key - 1, substring.concat(output));
         }
 
         //updating the below node. Need to perform for last element (up to down)
         if (!((tuplesLinkedHashMap.size() - key) == 1)) {
-//            String update = tuplesLinkedHashMap.get(key + 1) == null ? tuplesLinkedHashMap.get(key + 2).substring(1) : tuplesLinkedHashMap.get(key + 1).substring(1);
             if (tuplesLinkedHashMap.get(key + 1) == null) {
                 int operationIndex = problems.advancedcalculator.Utility.getOperationIndex(tuplesLinkedHashMap.get(key + 2));
                 String updatedValue = tuplesLinkedHashMap.get(key + 2).substring(operationIndex);
@@ -313,7 +305,6 @@ public class Calculator {
     public static void clearMemory() {
         inMemoryStorage.clear();
     }
-
 
     public static String recallAllMemory() {
         String result = "Stored values: ";
