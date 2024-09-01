@@ -1,5 +1,7 @@
 package problems.advancedcalculator;
 
+import org.w3c.dom.ls.LSOutput;
+import problems.array.ShiftElementsInArray;
 import problems.array.Utility;
 
 import java.util.*;
@@ -11,12 +13,8 @@ import static problems.advancedcalculator.Subtraction.performSubtraction;
 
 public class Calculator {
     static LinkedHashMap<Integer, String> tuplesLinkedHashMap = new LinkedHashMap<>();
-    static int currentNode;
-    static int previousNode;
-    static int nextNode;
 
-    public static void clearMemory() {
-    }
+    static List<Double> inMemoryStorage = new ArrayList<>();
 
     public static Double calculate(String userInput) {
 
@@ -25,6 +23,22 @@ public class Calculator {
                 System.out.println("Error: Input is empty or null");
                 return null;
             }
+
+            if (userInput.contains("sqrt")) {
+                return AdvancedMathmatecialOperation.calculateSquareRoot(userInput);
+            }
+
+            if (userInput.contains("^")) {
+                return AdvancedMathmatecialOperation.calculateExponential(userInput);
+            }
+
+            if (userInput.contains("M+")) {
+                String[] split = userInput.trim().split("M\\+");
+                String output = performCalculation(getOperation(split[0]), Utility.convertToDoubleArray(split[0].split("\\+|\\-|\\*|\\/")));
+                inMemoryStorage.add(Double.parseDouble(output));
+                return Double.parseDouble(output);
+            }
+
             String tuple = " ";
             int openIndex;
             int closeIndex;
@@ -32,17 +46,6 @@ public class Calculator {
             userInput = userInput.replaceAll("\\s+", "");
             String[] split = userInput.split("\\+|\\-|\\*|\\/");
 
-            if (userInput.contains("sqrt")) {
-                try {
-                    return AdvancedMathmatecialOperation.calculateSquareRoot(userInput);
-                } catch (ArithmeticException e) {
-                    System.out.println("error: " + e.getMessage());
-                }
-            }
-
-            if (userInput.contains("^")) {
-                return AdvancedMathmatecialOperation.calculateExponential(userInput);
-            }
 
             if (!(split.length > 2)) {
                 String resultedValue = performCalculation(getOperation(userInput), Utility.convertToDoubleArray(userInput.split("\\+|\\-|\\*|\\/")));
@@ -113,9 +116,9 @@ public class Calculator {
                 output = performCalculation(operation, Utility.convertToDoubleArray(value1.split("\\+|\\-|\\*|\\/")));
                 if (tuplesLinkedHashMap.size() < 2) return output;
                 performMappingOperation(key, output, operation);
-                currentNode = entry.getKey();
-                previousNode = entry.getKey() - 1;
-                nextNode = entry.getKey() + 1;
+//                currentNode = entry.getKey();
+//                previousNode = entry.getKey() - 1;
+//                nextNode = entry.getKey() + 1;
                 keysToRemove.add(entry.getKey());
             }
         }
@@ -226,12 +229,6 @@ public class Calculator {
         }
     }
 
-//    checkElement(String checkInput){
-//        if(checkInput.contains("+") || checkInput.contains("-") || checkInput.contains("*") || checkInput.contains("/")) {
-//            checkInput.charAt("+")
-//        }
-//    }
-
     public static Integer precedenceLevelCheck(String input) {
         if (input.equals("(")) return 5;
         if (input.equals("/")) return 4;
@@ -264,24 +261,6 @@ public class Calculator {
         }
         return null;
     }
-
-
-//    public static double paranthesisOperation(List<Integer> range, char[] input) {
-//        int[] element = new int[2];
-//        char operator = 0;
-//        int j = 0;
-//        for (int i = range.get(0) + 1; i < range.get(1); i++) {
-//            if (input[i] == '+' || input[i] == '-' || input[i] == '/' || input[i] == '*') {
-//                operator = input[i];
-//            } else {
-//                element[j] = (Integer.parseInt(String.valueOf(input[i])));
-//                j++;
-//            }
-//        }
-//
-//        return Double.parseDouble(performCalculation(operator, element));
-//
-//    }
 
 
     private static char getOperation(String userInput) {
@@ -317,14 +296,34 @@ public class Calculator {
     }
 
     public static double recallMemory() {
-        return 0;
+        return inMemoryStorage.get(inMemoryStorage.size() - 1);
     }
 
-    public static void storeInMemory(double v) {
-
+    public static void storeInMemory(double valuToBeStored) {
+        if (inMemoryStorage.size() > 4) {
+            inMemoryStorage.remove(0);
+            inMemoryStorage.add(valuToBeStored);
+            List<Double> shiftedResult = problems.advancedcalculator.Utility.shiftInputArrayList(inMemoryStorage, 1);
+            inMemoryStorage = shiftedResult;
+            return;
+        }
+        inMemoryStorage.add(valuToBeStored);
     }
+
+    public static void clearMemory() {
+        inMemoryStorage.clear();
+    }
+
 
     public static String recallAllMemory() {
-        return null;
+        String result = "Stored values: ";
+        if (inMemoryStorage.isEmpty()) {
+            return "No values stored in memory.";
+        }
+        for (int i = 0; i < inMemoryStorage.size(); i++) {
+            String concat = !(inMemoryStorage.size() - i == 1) ? ", " : "";
+            result += inMemoryStorage.get(i) + concat;
+        }
+        return result;
     }
 }

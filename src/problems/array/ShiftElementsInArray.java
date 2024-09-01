@@ -31,7 +31,7 @@ public class ShiftElementsInArray {
         System.out.println(Arrays.toString(shiftArray(ints, position)));
     }
 
-    static int[] shiftArray(int[] array, int positions) {
+    public static int[] shiftArray(int[] array, int positions) {
         int[] shiftedArray = new int[array.length];
         int j = 0;
         int indexPosition = array.length - positions;
